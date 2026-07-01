@@ -59,9 +59,6 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// Add a showMovieHandler for the "GET /v1/movies/:id" endpoint. For now, we retrieve
-// the interpolated "id" parameter from the current URL and include it in a placeholder
-// response.
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -136,6 +133,8 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
+	app.logger.Info("movie updated successfully", "id", movie.ID, "version", movie.Version)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
 	if err != nil {
