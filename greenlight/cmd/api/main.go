@@ -5,10 +5,13 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 
 	"github.com/khairul746/golang-projects/greenlight/internal/data"
 	_ "github.com/lib/pq"
@@ -45,6 +48,11 @@ type application struct {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	var cfg config
 
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
