@@ -6,4 +6,5 @@ coverage.out
 .idea/
 .DS_Store
 .env
+.envrc
 
