@@ -9,8 +9,7 @@ import (
 	"github.com/khairul746/golang-projects/greenlight/internal/validator"
 )
 
-// Add a createMovieHandler for the "POST /v1/movies" endpoint. For now we simply
-// return a plain-text placeholder response.
+// Add a createMovieHandler for the "POST /v1/movies" endpoint.
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title   string       `json:"title"`
@@ -59,6 +58,7 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// Add a showMovieHandler for the "GET /v1/movies/:id" endpoint.
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -85,7 +85,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// Update a movie record in the database.
+// Add an updateMovieHandler for the "PATCH /v1/movies/:id" endpoint.
 func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -138,7 +138,12 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	err = app.models.Movies.Update(movie)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 
@@ -150,6 +155,7 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// Add a deleteMovieHandler for the "DELETE /v1/movies/:id" endpoint.
 func (app *application) deleteMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
